@@ -22,7 +22,7 @@ jobs:
       #  run: pod install
 
       - name: Run Unit Tests
-        run: xcodebuild -project "./ios/App/App.xcodeproj" -scheme "App" -destination "platform=iOS Simulator,name=iPhone 12,OS=latest" clean test | xcpretty
+        run: xcodebuild -project "BitriseUnitTestSample.xcodeproj" -scheme "project" -destination "platform=iOS Simulator,name=iPhone 12,OS=latest" clean test | xcpretty
 
       - name: Generate report
         run: slather coverage --html --scheme ./ios/App/App ./ios/App/App.xcodeproj
