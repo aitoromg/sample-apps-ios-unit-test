@@ -31,7 +31,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: Slather Report
-          path: html/*
+          path: ./html/*
 
   dependency-check:
     name: Dependency Check
