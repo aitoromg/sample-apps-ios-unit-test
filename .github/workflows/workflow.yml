@@ -22,10 +22,10 @@ jobs:
       #  run: pod install
 
       - name: Run Unit Tests
-        run: xcodebuild -project "BitriseUnitTestSample.xcodeproj" -scheme "project" -destination "platform=iOS Simulator,name=iPhone 12,OS=latest" clean test | xcpretty
+        run: xcodebuild -project "BitriseUnitTestSample.xcodeproj" -scheme "BitriseUnitTestSample" -destination "platform=iOS Simulator,name=iPhone 12,OS=latest" clean test | xcpretty
 
       - name: Generate report
-        run: slather coverage --html --scheme ./ios/App/App ./ios/App/App.xcodeproj
+        run: slather coverage --html --scheme BitriseUnitTestSample BitriseUnitTestSample.xcodeproj
 
       - name: Upload slather report
         uses: actions/upload-artifact@v2
