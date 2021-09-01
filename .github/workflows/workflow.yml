@@ -51,7 +51,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: Dependency Check Report
-          path: dependency_check_report.html
+          path: dependency-check-report.html
           
   kiuwan:
     name: Kiuwan
