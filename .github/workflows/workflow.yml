@@ -73,7 +73,7 @@ jobs:
         uses: ./
         with:
           softwareName: gsc:sgt:sd-purchase-experience:Z033259-AND_ATENEA
-          sourcePath: ./project
+          sourcePath: ./
           user: ${{ secrets.KIUWAN_USER }}
           pass: ${{ secrets.KIUWAN_PASS }}
         continue-on-error: true
