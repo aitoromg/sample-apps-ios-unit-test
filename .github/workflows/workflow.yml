@@ -8,7 +8,7 @@ on:
 
 jobs:
   unit-tests:
-    name: Slather report
+    name: Slather Report
     runs-on: macos-latest
 
     steps:
@@ -50,8 +50,8 @@ jobs:
       - name: Upload dependency-check report
         uses: actions/upload-artifact@v2
         with:
-          name: Dependency Check report
-          path: dependency-check-report.html
+          name: Dependency Check Report
+          path: dependency_check_report.html
           
   kiuwan:
     name: Kiuwan
@@ -81,4 +81,4 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: Kiuwan Report
-          path: ./kiuwan_report.pdf
+          path: kiuwan_report.pdf
