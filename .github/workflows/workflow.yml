@@ -52,3 +52,33 @@ jobs:
         with:
           name: Dependency Check report
           path: dependency-check-report.html
+          
+  kiuwan:
+    name: Kiuwan
+    runs-on: self-hosted
+    
+    steps:
+
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: Checkout KiuwanLocalAnalyzer
+        uses: actions/checkout@v2
+        with:
+          repository: aitoromg/kiuwan_mobility
+          token: ${{ secrets.PAT }}
+          path: ./
+
+      - name: Run KiuwanLocalAnalyzer
+        uses: ./
+        with:
+          softwareName: gsc:sgt:sd-purchase-experience:android-ci
+          sourcePath: ./project
+          user: ${{ secrets.KIUWAN_USER }}
+          pass: ${{ secrets.KIUWAN_PASS }}
+        continue-on-error: true
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Kiuwan Report
+          path: ./kiuwan_report.pdf
