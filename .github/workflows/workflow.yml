@@ -8,7 +8,7 @@ on:
 
 jobs:
   unit-tests:
-    name: Slather Report
+    name: Slather
     runs-on: macos-latest
 
     steps:
