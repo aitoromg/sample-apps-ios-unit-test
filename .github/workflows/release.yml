@@ -1,10 +1,10 @@
-name: iOS starter workflow
+name: iOS release workflow
 
 on:
   push:
-    branches: [master]
+    branches: [release]
   pull_request:
-    branches: [master]
+    branches: [release]
 
 jobs:
   unit-tests:
@@ -30,9 +30,11 @@ jobs:
         run: xcodebuild -project "BitriseUnitTestSample.xcodeproj" -scheme "BitriseUnitTestSample" -destination "platform=iOS Simulator,name=iPhone 12,OS=latest" clean test | xcpretty
 
       - name: Generate report
+        if: ${{ failure() }}
         run: slather coverage --html --scheme BitriseUnitTestSample BitriseUnitTestSample.xcodeproj
 
       - name: Upload slather report
+        if: ${{ failure() }}
         uses: actions/upload-artifact@v2
         with:
           name: Slather Report
@@ -138,5 +140,5 @@ jobs:
           
       - name: Deploy to AppCenter
         run: | 
-          appcenter distribute release -f builds/ipa/*.ipa -g Collaborators --app SGT/Test_iOS_GitHubActions --token ${{ secrets.APPCENTER_API_TOKEN }}
-          appcenter crashes upload-symbols -s builds/ipa/*.app.dSYM.zip --app SGT/Test_iOS_GitHubActions --token ${{ secrets.APPCENTER_API_TOKEN }}
+          appcenter distribute release -f builds/ipa/*.ipa -g Collaborators --app SGT-Movilidad-COEX/Test_iOS_GitHubActions --token ${{ secrets.APPCENTER_API_TOKEN }}
+          appcenter crashes upload-symbols -s builds/ipa/*.app.dSYM.zip --app SGT-Movilidad-COEX/Test_iOS_GitHubActions --token ${{ secrets.APPCENTER_API_TOKEN }}

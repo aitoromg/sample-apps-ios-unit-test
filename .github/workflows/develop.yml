@@ -1,0 +1,122 @@
+name: iOS develop workflow
+
+on:
+  push:
+    branches: [develop]
+  pull_request:
+    branches: [develop]
+
+jobs:
+  unit-tests:
+    name: Slather
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+          
+      - name: Pull LFS objects
+        run: git lfs pull
+
+      - name: Install slather
+        run: gem install slather
+
+      #- name: Install pods
+      #  run: pod install
+
+      - name: Run Unit Tests
+        run: xcodebuild -project BitriseUnitTestSample.xcodeproj -scheme BitriseUnitTestSample -destination "platform=iOS Simulator,name=iPhone 12,OS=latest" clean test | xcpretty
+
+      - name: Generate report
+        if: ${{ failure() }}
+        run: slather coverage --html --scheme BitriseUnitTestSample BitriseUnitTestSample.xcodeproj
+
+      - name: Upload slather report
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: Slather Report
+          path: ./html/*
+
+  dependency-check:
+    name: Dependency Check
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+          
+      - name: Pull LFS objects
+        run: git lfs pull
+
+      - name: Install dependency-check
+        run: brew update && brew install dependency-check
+
+      - name: dependency-check run
+        run: dependency-check --out . --scan .
+
+      - name: Upload dependency-check report
+        uses: actions/upload-artifact@v2
+        with:
+          name: Dependency Check Report
+          path: dependency-check-report.html
+          
+  kiuwan:
+    name: Kiuwan
+    runs-on: ubuntu-latest
+    
+    steps:
+
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+          
+      - name: Pull LFS objects
+        run: git lfs pull
+
+      - name: Checkout KiuwanLocalAnalyzer
+        uses: actions/checkout@v2
+        with:
+          repository: aitoromg/kiuwan_mobility
+          token: ${{ secrets.PAT }}
+          path: ./
+
+      - name: Run KiuwanLocalAnalyzer
+        uses: ./
+        with:
+          softwareName: gsc:sgt:sd-purchase-experience:ios-ci
+          sourcePath: ./
+          user: ${{ secrets.KIUWAN_USER }}
+          pass: ${{ secrets.KIUWAN_PASS }}
+        continue-on-error: true
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Kiuwan Report
+          path: ./kiuwan_report.pdf
+          
+  build_app:
+    name: Build APP & Deploy to AppCenter
+    runs-on: macos-latest
+    
+    steps:
+
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+          
+      - name: Pull LFS objects
+        run: git lfs pull
+        
+      - name: Build APP
+        run: xcodebuild build-for-testing -project BitriseUnitTestSample.xcodeproj -scheme BitriseUnitTestSample -derivedDataPath build
+          
+      - name: Deploy to AppCenter
+        run: | 
+          appcenter distribute release -f ./build/Build/Products/Debug-iphonesimulator/*.app -g Collaborators --app SGT-Movilidad-COEX/Test_iOS_GitHubActions --token ${{ secrets.APPCENTER_API_TOKEN }}
