@@ -53,23 +53,9 @@ jobs:
         with:
           name: pass_file
           path: ./test_success.txt
-  
-  test_mock:
-    name: Mock Test
-    runs-on: macos-latest
-
-    steps:
-      - name: Create file test_mock_success.txt and write 'true' into it
-        run: echo 'true' > test_mock_success.txt
-
-      - name: Upload file test_mock_success.txt
-        uses: actions/upload-artifact@v2
-        with:
-          name: pass_file_mock
-          path: ./test_mock_success.txt
 
   dependency-check:
-    needs: [test_mock]
+    needs: [unit-tests]
     if: always()
     name: Dependency Check
     runs-on: macos-latest
@@ -78,28 +64,32 @@ jobs:
       - name: Download file test_success.txt
         uses: actions/download-artifact@v2
         with:
-          name: pass_file_mock
+          name: pass_file
 
       - name: Read file test_success.txt and set output parameter
         id: set_output
-        run: echo "::set-output name=test_success::$(<test_mock_success.txt)"
+        run: echo "::set-output name=test_success::$(<test_success.txt)"
 
       - name: Checkout the repository
-        if: steps.set_output.outputs.test_success == 'false'
+        if: steps.set_output.outputs.test_success == 'true'
         uses: actions/checkout@v2
         with:
           lfs: true
           
       - name: Pull LFS objects
+        if: steps.set_output.outputs.test_success == 'true'
         run: git lfs pull
 
       - name: Install dependency-check
+        if: steps.set_output.outputs.test_success == 'true'
         run: brew update && brew install dependency-check
 
       - name: dependency-check run
+        if: steps.set_output.outputs.test_success == 'true'
         run: dependency-check --out . --scan .
 
       - name: Upload dependency-check report
+        if: steps.set_output.outputs.test_success == 'true'
         uses: actions/upload-artifact@v2
         with:
           name: Dependency Check Report
@@ -117,22 +107,23 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: pass_file
-          path: ./test_success.txt
 
       - name: Read file test_success.txt and set output parameter
         id: set_output
-        run: echo "::set-output name=test_success::$(<pass_file/test_success.txt)"
+        run: echo "::set-output name=test_success::$(<test_success.txt)"
 
       - name: Checkout the repository
-        if: steps.set_output.outputs.test_success == 'false'
+        if: steps.set_output.outputs.test_success == 'true'
         uses: actions/checkout@v2
         with:
           lfs: true
           
       - name: Pull LFS objects
+        if: steps.set_output.outputs.test_success == 'true'
         run: git lfs pull
 
       - name: Checkout KiuwanLocalAnalyzer
+        if: steps.set_output.outputs.test_success == 'true'
         uses: actions/checkout@v2
         with:
           repository: aitoromg/kiuwan_mobility
@@ -140,6 +131,7 @@ jobs:
           path: ./
 
       - name: Run KiuwanLocalAnalyzer
+        if: steps.set_output.outputs.test_success == 'true'
         uses: ./
         with:
           softwareName: gsc:sgt:sd-purchase-experience:ios-ci
@@ -149,6 +141,7 @@ jobs:
         continue-on-error: true
 
       - uses: actions/upload-artifact@v2
+        if: steps.set_output.outputs.test_success == 'true'
         with:
           name: Kiuwan Report
           path: ./kiuwan_report.pdf
@@ -165,11 +158,10 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: pass_file
-          path: ./test_success.txt
 
       - name: Read file test_success.txt and set output parameter
         id: set_output
-        run: echo "::set-output name=test_success::$(<pass_file/test_success.txt)"
+        run: echo "::set-output name=test_success::$(<test_success.txt)"
 
       - name: Checkout the repository
         if: steps.set_output.outputs.test_success == 'true'
@@ -178,12 +170,15 @@ jobs:
           lfs: true
           
       - name: Pull LFS objects
+        if: steps.set_output.outputs.test_success == 'true'
         run: git lfs pull
         
       - name: Build APP
+        if: steps.set_output.outputs.test_success == 'true'
         run: xcodebuild build-for-testing -project BitriseUnitTestSample.xcodeproj -scheme BitriseUnitTestSample -destination "platform=iOS Simulator,name=iPhone 12,OS=latest"
       
       - name: Zip APP
+        if: steps.set_output.outputs.test_success == 'true'
         uses: thedoctor0/zip-release@master
         with:
           type: 'zip'
@@ -193,4 +188,4 @@ jobs:
       - name: Deploy to AppCenter
         run: | 
           appcenter distribute release -f ./*.zip -g Collaborators --app SGT-Movilidad-COEX/Test_iOS_GitHubActions --build-version ${{ github.run_number }} --token ${{ secrets.APPCENTER_API_TOKEN }}
-        # appcenter crashes upload-symbols -s /Users/runner/Library/Developer/Xcode/DerivedData/*/Build/Products/Debug-iphonesimulator/*.app.dSYM --app SGT-Movilidad-COEX/Test_iOS_GitHubActions --token ${{ secrets.APPCENTER_API_TOKEN }}
+          appcenter crashes upload-symbols -s /Users/runner/Library/Developer/Xcode/DerivedData/*/Build/Products/Debug-iphonesimulator/*.app.dSYM --app SGT-Movilidad-COEX/Test_iOS_GitHubActions --token ${{ secrets.APPCENTER_API_TOKEN }}
