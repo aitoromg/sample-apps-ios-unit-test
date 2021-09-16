@@ -20,7 +20,7 @@ jobs:
       - name: Pull LFS objects
         run: git lfs pull
 
-      - name: Install slather
+      - name: Install Slather
         run: gem install slather
 
       #- name: Install pods
@@ -33,7 +33,7 @@ jobs:
         if: ${{ failure() }}
         run: slather coverage --html --scheme BitriseUnitTestSample BitriseUnitTestSample.xcodeproj
 
-      - name: Upload slather report
+      - name: Upload Slather report
         if: ${{ failure() }}
         uses: actions/upload-artifact@v2
         with:
@@ -42,7 +42,7 @@ jobs:
 
       - name: Create file test_success.txt and write 'true' into it
         if: ${{ success() }}
-        run: echo 'true' > post_message.txt
+        run: echo 'true' > test_success.txt
 
       - name: Create file test_success.txt and write 'false' into it
         if: ${{ failure() }}
