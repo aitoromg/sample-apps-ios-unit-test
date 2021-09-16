@@ -46,7 +46,7 @@ jobs:
 
       - name: Create file test_success.txt and write 'false' into it
         if: ${{ failure() }}
-        run: echo 'false' > post_message.txt
+        run: echo 'false' > test_success.txt
 
       - name: Upload file test_success.txt
         uses: actions/upload-artifact@v2
