@@ -27,7 +27,7 @@ jobs:
       #  run: pod install
 
       - name: Run Unit Tests
-        run: xcodebuild -project "BitriseUnitTestSample.xcodeproj" -scheme "BitriseUnitTestSample" -destination "platform=iOS Simulator,name=iPhone 12,OS=latest" clean test | xcpretty
+        run: xcodebuild -project BitriseUnitTestSample.xcodeproj -scheme BitriseUnitTestSample -destination "platform=iOS Simulator,name=iPhone 12,OS=latest" clean test | xcpretty
 
       - name: Generate report
         if: ${{ failure() }}

@@ -115,8 +115,8 @@ jobs:
         run: git lfs pull
         
       - name: Build APP
-        run: xcodebuild build-for-testing -project BitriseUnitTestSample.xcodeproj -scheme BitriseUnitTestSample -derivedDataPath build
+        run: xcodebuild build-for-testing -project BitriseUnitTestSample.xcodeproj -scheme BitriseUnitTestSample -destination "platform=iOS Simulator,name=iPhone 12,OS=latest"
           
       - name: Deploy to AppCenter
         run: | 
-          appcenter distribute release -f ./build/Build/Products/Debug-iphonesimulator/*.app -g Collaborators --app SGT-Movilidad-COEX/Test_iOS_GitHubActions --token ${{ secrets.APPCENTER_API_TOKEN }}
+          appcenter distribute release -f /Users/runner/work/sample-apps-ios-unit-test/sample-apps-ios-unit-test/Build/Products/Debug-iphonesimulator/*.app -g Collaborators --app SGT-Movilidad-COEX/Test_iOS_GitHubActions --token ${{ secrets.APPCENTER_API_TOKEN }}
