@@ -202,5 +202,5 @@ jobs:
       - name: Deploy to AppCenter
         if: steps.set_output.outputs.test_success == 'true'
         run: | 
-          appcenter distribute release -f builds/ipa/*.ipa -g Collaborators --app SGT-Movilidad-COEX/Test_iOS_GitHubActions --release-notes '${{ github.event.commits[0].message }}' --token ${{ secrets.APPCENTER_API_TOKEN }}
+          appcenter distribute release -f builds/ipa/*.ipa -g Collaborators --app SGT-Movilidad-COEX/Test_iOS_GitHubActions --release-notes "${{ github.event.commits[0].message }}" --token ${{ secrets.APPCENTER_API_TOKEN }}
           appcenter crashes upload-symbols -s builds/ipa/*.app.dSYM --app SGT-Movilidad-COEX/Test_iOS_GitHubActions --token ${{ secrets.APPCENTER_API_TOKEN }}
