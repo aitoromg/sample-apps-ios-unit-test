@@ -12,8 +12,13 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout the repository
         uses: actions/checkout@v2
+        with:
+          lfs: true
+          
+      - name: Pull LFS objects
+        run: git lfs pull
 
       - name: Install slather
         run: gem install slather
@@ -38,8 +43,13 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout the repository
         uses: actions/checkout@v2
+        with:
+          lfs: true
+          
+      - name: Pull LFS objects
+        run: git lfs pull
 
       - name: Install dependency-check
         run: brew update && brew install dependency-check
@@ -61,6 +71,11 @@ jobs:
 
       - name: Checkout the repository
         uses: actions/checkout@v2
+        with:
+          lfs: true
+          
+      - name: Pull LFS objects
+        run: git lfs pull
 
       - name: Checkout KiuwanLocalAnalyzer
         uses: actions/checkout@v2
@@ -82,3 +97,46 @@ jobs:
         with:
           name: Kiuwan Report
           path: ./kiuwan_report.pdf
+          
+  build_ipa:
+    name: Build IPA & Deploy to AppCenter
+    runs-on: macos-latest
+    
+    steps:
+
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+          
+      - name: Pull LFS objects
+        run: git lfs pull
+        
+      - name: Add SSH key
+        run: |
+          mkdir -p ssh
+          echo  "${{ secrets.CI_SSH_KEY }}" > ssh/private.key
+          sudo chmod 600 ssh/private.key
+        shell: bash
+        
+      - name: Get certificates and provisioning profile
+        run: fastlane match development --readonly --verbose --generate_apple_certs false --git_private_key "ssh/private.key" --app_identifier "com.isban.bancosantander.BitriseUnitTestSample"
+        #    fastlane match enterprise --readonly --verbose --generate_apple_certs false --git_private_key "ssh/private.key" --app_identifier "com.isban.bancosantander.BitriseUnitTestSample"
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          
+      - name: See the provisioning profile installed
+        run: | 
+          security find-identity -v -p codesigning
+          fastlane sigh manage
+        shell: bash
+        
+      - name: Build IPA
+        run: fastlane buildFireflyWithOptions git_head:"##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})" addCommitHashToIpa:true build_dev:true 
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          
+      - name: Deploy to AppCenter
+        run: | 
+          appcenter distribute release -f builds/ipa/*.ipa -g Collaborators --app SGT/Test_iOS_GitHubActions --token ${{ secrets.APPCENTER_API_TOKEN }}
+          appcenter crashes upload-symbols -s builds/ipa/*.app.dSYM.zip --app SGT/Test_iOS_GitHubActions --token ${{ secrets.APPCENTER_API_TOKEN }}
