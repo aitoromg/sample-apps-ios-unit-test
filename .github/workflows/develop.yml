@@ -91,6 +91,7 @@ jobs:
           lfs: true
           
       - name: Pull LFS objects
+        if: ${{ success() }}
         run: git lfs pull
 
       - name: Install dependency-check
