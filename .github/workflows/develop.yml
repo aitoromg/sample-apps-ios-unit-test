@@ -116,7 +116,14 @@ jobs:
         
       - name: Build APP
         run: xcodebuild build-for-testing -project BitriseUnitTestSample.xcodeproj -scheme BitriseUnitTestSample -destination "platform=iOS Simulator,name=iPhone 12,OS=latest"
-          
+      
+      - name: Zip APP
+        uses: thedoctor0/zip-release@master
+        with:
+          type: 'zip'
+          filename: 'app.zip'
+          path: '/Users/runner/Library/Developer/Xcode/DerivedData/*/Build/Products/Debug-iphonesimulator/*.app'
+
       - name: Deploy to AppCenter
         run: | 
-          appcenter distribute release -f /Users/runner/Library/Developer/Xcode/DerivedData/*/Build/Products/Debug-iphonesimulator/*.app -g Collaborators --app SGT-Movilidad-COEX/Test_iOS_GitHubActions --token ${{ secrets.APPCENTER_API_TOKEN }}
+          appcenter distribute release -f ./*.zip -g Collaborators --app SGT-Movilidad-COEX/Test_iOS_GitHubActions --token ${{ secrets.APPCENTER_API_TOKEN }}
