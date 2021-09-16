@@ -51,7 +51,7 @@ jobs:
       - name: Upload Unit Tests Result
         uses: actions/upload-artifact@v2
         with:
-          name: pass_file
+          name: Unit Tests Result
           path: ./test_success.txt
 
   dependency-check:
@@ -64,7 +64,7 @@ jobs:
       - name: Download Unit Tests Result
         uses: actions/download-artifact@v2
         with:
-          name: pass_file
+          name: Unit Tests Result
 
       - name: Read Unit Tests Result
         id: set_output
@@ -106,7 +106,7 @@ jobs:
       - name: Download Unit Tests Result
         uses: actions/download-artifact@v2
         with:
-          name: pass_file
+          name: Unit Tests Result
 
       - name: Read Unit Tests Result
         id: set_output
@@ -157,7 +157,7 @@ jobs:
       - name: Download Unit Tests Result
         uses: actions/download-artifact@v2
         with:
-          name: pass_file
+          name: Unit Tests Result
 
       - name: Read Unit Tests Result
         id: set_output

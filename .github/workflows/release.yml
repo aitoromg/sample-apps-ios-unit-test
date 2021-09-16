@@ -8,7 +8,7 @@ on:
 
 jobs:
   unit-tests:
-    name: Slather
+    name: Unit Tests & Slather
     runs-on: macos-latest
 
     steps:
@@ -20,7 +20,7 @@ jobs:
       - name: Pull LFS objects
         run: git lfs pull
 
-      - name: Install slather
+      - name: Install Slather
         run: gem install slather
 
       #- name: Install pods
@@ -33,53 +33,97 @@ jobs:
         if: ${{ failure() }}
         run: slather coverage --html --scheme BitriseUnitTestSample BitriseUnitTestSample.xcodeproj
 
-      - name: Upload slather report
+      - name: Upload Slather report
         if: ${{ failure() }}
         uses: actions/upload-artifact@v2
         with:
           name: Slather Report
           path: ./html/*
 
+      - name: Unit Tests Success
+        if: ${{ success() }}
+        run: echo 'true' > test_success.txt
+
+      - name: Create file test_success.txt and write 'false' into it
+        if: ${{ failure() }}
+        run: echo 'false' > test_success.txt
+
+      - name: Upload Unit Tests Result
+        uses: actions/upload-artifact@v2
+        with:
+          name: Unit Tests Result
+          path: ./test_success.txt
+
   dependency-check:
+    needs: [unit-tests]
+    if: always()
     name: Dependency Check
     runs-on: macos-latest
 
     steps:
+      - name: Download Unit Tests Result
+        uses: actions/download-artifact@v2
+        with:
+          name: Unit Tests Result
+
+      - name: Read Unit Tests Result
+        id: set_output
+        run: echo "::set-output name=test_success::$(<test_success.txt)"
+
       - name: Checkout the repository
+        if: steps.set_output.outputs.test_success == 'true'
         uses: actions/checkout@v2
         with:
           lfs: true
           
       - name: Pull LFS objects
+        if: steps.set_output.outputs.test_success == 'true'
         run: git lfs pull
 
       - name: Install dependency-check
+        if: steps.set_output.outputs.test_success == 'true'
         run: brew update && brew install dependency-check
 
       - name: dependency-check run
+        if: steps.set_output.outputs.test_success == 'true'
         run: dependency-check --out . --scan .
 
       - name: Upload dependency-check report
+        if: steps.set_output.outputs.test_success == 'true'
         uses: actions/upload-artifact@v2
         with:
           name: Dependency Check Report
           path: dependency-check-report.html
           
   kiuwan:
+    needs: [unit-tests]
+    if: always()
     name: Kiuwan
     runs-on: ubuntu-latest
     
     steps:
 
+      - name: Download Unit Tests Result
+        uses: actions/download-artifact@v2
+        with:
+          name: Unit Tests Result
+
+      - name: Read Unit Tests Result
+        id: set_output
+        run: echo "::set-output name=test_success::$(<test_success.txt)"
+
       - name: Checkout the repository
+        if: steps.set_output.outputs.test_success == 'true'
         uses: actions/checkout@v2
         with:
           lfs: true
           
       - name: Pull LFS objects
+        if: steps.set_output.outputs.test_success == 'true'
         run: git lfs pull
 
       - name: Checkout KiuwanLocalAnalyzer
+        if: steps.set_output.outputs.test_success == 'true'
         uses: actions/checkout@v2
         with:
           repository: aitoromg/kiuwan_mobility
@@ -87,6 +131,7 @@ jobs:
           path: ./
 
       - name: Run KiuwanLocalAnalyzer
+        if: steps.set_output.outputs.test_success == 'true'
         uses: ./
         with:
           softwareName: gsc:sgt:sd-purchase-experience:ios-ci
@@ -96,25 +141,40 @@ jobs:
         continue-on-error: true
 
       - uses: actions/upload-artifact@v2
+        if: steps.set_output.outputs.test_success == 'true'
         with:
           name: Kiuwan Report
           path: ./kiuwan_report.pdf
           
   build_ipa:
+    needs: [unit-tests]
+    if: always()
     name: Build IPA & Deploy to AppCenter
     runs-on: macos-latest
     
     steps:
 
+      - name: Download Unit Tests Result
+        uses: actions/download-artifact@v2
+        with:
+          name: Unit Tests Result
+
+      - name: Read Unit Tests Result
+        id: set_output
+        run: echo "::set-output name=test_success::$(<test_success.txt)"
+
       - name: Checkout the repository
+        if: steps.set_output.outputs.test_success == 'true'
         uses: actions/checkout@v2
         with:
           lfs: true
           
       - name: Pull LFS objects
+        if: steps.set_output.outputs.test_success == 'true'
         run: git lfs pull
         
       - name: Add SSH key
+        if: steps.set_output.outputs.test_success == 'true'
         run: |
           mkdir -p ssh
           echo  "${{ secrets.CI_SSH_KEY }}" > ssh/private.key
@@ -122,23 +182,27 @@ jobs:
         shell: bash
         
       - name: Get certificates and provisioning profile
+        if: steps.set_output.outputs.test_success == 'true'
         run: fastlane match development --readonly --verbose --generate_apple_certs false --git_private_key "ssh/private.key" --app_identifier "com.isban.bancosantander.BitriseUnitTestSample"
         #    fastlane match enterprise --readonly --verbose --generate_apple_certs false --git_private_key "ssh/private.key" --app_identifier "com.isban.bancosantander.BitriseUnitTestSample"
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           
       - name: See the provisioning profile installed
+        if: steps.set_output.outputs.test_success == 'true'
         run: | 
           security find-identity -v -p codesigning
           fastlane sigh manage
         shell: bash
         
       - name: Build IPA
+        if: steps.set_output.outputs.test_success == 'true'
         run: fastlane buildFireflyWithOptions git_head:"##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})" addCommitHashToIpa:true build_dev:true 
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           
       - name: Deploy to AppCenter
+        if: steps.set_output.outputs.test_success == 'true'
         run: | 
           appcenter distribute release -f builds/ipa/*.ipa -g Collaborators --app SGT-Movilidad-COEX/Test_iOS_GitHubActions --token ${{ secrets.APPCENTER_API_TOKEN }}
-          appcenter crashes upload-symbols -s builds/ipa/*.app.dSYM.zip --app SGT-Movilidad-COEX/Test_iOS_GitHubActions --token ${{ secrets.APPCENTER_API_TOKEN }}
+          appcenter crashes upload-symbols -s builds/ipa/*.app.dSYM --app SGT-Movilidad-COEX/Test_iOS_GitHubActions --token ${{ secrets.APPCENTER_API_TOKEN }}
