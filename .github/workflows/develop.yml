@@ -53,9 +53,23 @@ jobs:
         with:
           name: pass_file
           path: ./test_success.txt
+  
+  test_mock:
+    name: Mock Test
+    runs-on: macos-latest
+
+    steps:
+      - name: Create file test_mock_success.txt and write 'true' into it
+        run: echo 'true' > test_mock_success.txt
+
+      - name: Upload file test_mock_success.txt
+        uses: actions/upload-artifact@v2
+        with:
+          name: pass_file_mock
+          path: ./test_mock_success.txt
 
   dependency-check:
-    needs: [unit-tests]
+    needs: [test_mock]
     if: always()
     name: Dependency Check
     runs-on: macos-latest
@@ -64,11 +78,11 @@ jobs:
       - name: Download file test_success.txt
         uses: actions/download-artifact@v2
         with:
-          name: pass_file
+          name: pass_file_mock
 
       - name: Read file test_success.txt and set output parameter
         id: set_output
-        run: echo "::set-output name=test_success::$(<pass_file/test_success.txt)"
+        run: echo "::set-output name=test_success::$(<pass_file_mock/test_success.txt)"
 
       - name: Checkout the repository
         if: steps.set_output.outputs.test_success == 'true'
