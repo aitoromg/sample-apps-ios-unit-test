@@ -217,8 +217,8 @@
 				ORGANIZATIONNAME = Bitrise;
 				TargetAttributes = {
 					BABE89EB19B9C84C00F2DC40 = {
-						DevelopmentTeam = 6YVLU6LV9S;
-						ProvisioningStyle = Manual;
+						DevelopmentTeam = 7QW8Q9ZQ43;
+						ProvisioningStyle = Automatic;
 					};
 					BABE8A1719B9C84C00F2DC40 = {
 						TestTargetID = BABE89EB19B9C84C00F2DC40;
@@ -413,15 +413,16 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = 6YVLU6LV9S;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 7QW8Q9ZQ43;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "BitriseUnitTestSample/BitriseUnitTestSample-Prefix.pch";
 				INFOPLIST_FILE = "BitriseUnitTestSample/BitriseUnitTestSample-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.isban.bancosantander.BitriseUnitTestSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "Wildcard - Dev";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -431,15 +432,16 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = 6YVLU6LV9S;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 7QW8Q9ZQ43;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "BitriseUnitTestSample/BitriseUnitTestSample-Prefix.pch";
 				INFOPLIST_FILE = "BitriseUnitTestSample/BitriseUnitTestSample-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.isban.bancosantander.BitriseUnitTestSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "Wildcard - Dev";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
