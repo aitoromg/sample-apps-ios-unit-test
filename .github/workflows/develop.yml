@@ -119,4 +119,4 @@ jobs:
           
       - name: Deploy to AppCenter
         run: | 
-          appcenter distribute release -f /Users/runner/work/sample-apps-ios-unit-test/sample-apps-ios-unit-test/Build/Products/Debug-iphonesimulator/*.app -g Collaborators --app SGT-Movilidad-COEX/Test_iOS_GitHubActions --token ${{ secrets.APPCENTER_API_TOKEN }}
+          appcenter distribute release -f /Users/runner/Library/Developer/Xcode/DerivedData/*/Build/Products/Debug-iphonesimulator/*.app -g Collaborators --app SGT-Movilidad-COEX/Test_iOS_GitHubActions --token ${{ secrets.APPCENTER_API_TOKEN }}
