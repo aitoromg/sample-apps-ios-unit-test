@@ -8,7 +8,7 @@ on:
 
 jobs:
   unit-tests:
-    name: Slather
+    name: Unit Tests & Slather
     runs-on: macos-latest
 
     steps:
@@ -40,7 +40,7 @@ jobs:
           name: Slather Report
           path: ./html/*
 
-      - name: Create file test_success.txt and write 'true' into it
+      - name: Unit Tests Success
         if: ${{ success() }}
         run: echo 'true' > test_success.txt
 
@@ -48,7 +48,7 @@ jobs:
         if: ${{ failure() }}
         run: echo 'false' > test_success.txt
 
-      - name: Upload file test_success.txt
+      - name: Upload Unit Tests Result
         uses: actions/upload-artifact@v2
         with:
           name: pass_file
@@ -61,12 +61,12 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - name: Download file test_success.txt
+      - name: Download Unit Tests Result
         uses: actions/download-artifact@v2
         with:
           name: pass_file
 
-      - name: Read file test_success.txt and set output parameter
+      - name: Read Unit Tests Result
         id: set_output
         run: echo "::set-output name=test_success::$(<test_success.txt)"
 
@@ -103,12 +103,12 @@ jobs:
     
     steps:
 
-      - name: Download file test_success.txt
+      - name: Download Unit Tests Result
         uses: actions/download-artifact@v2
         with:
           name: pass_file
 
-      - name: Read file test_success.txt and set output parameter
+      - name: Read Unit Tests Result
         id: set_output
         run: echo "::set-output name=test_success::$(<test_success.txt)"
 
@@ -154,12 +154,12 @@ jobs:
     
     steps:
 
-      - name: Download file test_success.txt
+      - name: Download Unit Tests Result
         uses: actions/download-artifact@v2
         with:
           name: pass_file
 
-      - name: Read file test_success.txt and set output parameter
+      - name: Read Unit Tests Result
         id: set_output
         run: echo "::set-output name=test_success::$(<test_success.txt)"
 
@@ -187,5 +187,5 @@ jobs:
 
       - name: Deploy to AppCenter
         run: | 
-          appcenter distribute release -f ./*.zip -g Collaborators --app SGT-Movilidad-COEX/Test_iOS_GitHubActions --build-version ${{ github.run_number }} --token ${{ secrets.APPCENTER_API_TOKEN }}
+          appcenter distribute release -f ./*.zip -g Collaborators --app SGT-Movilidad-COEX/Test_iOS_GitHubActions --build-version ${{ github.run_number }} --release-notes ${{ github.event.commits[0].message }} --token ${{ secrets.APPCENTER_API_TOKEN }}
           appcenter crashes upload-symbols -s /Users/runner/Library/Developer/Xcode/DerivedData/*/Build/Products/Debug-iphonesimulator/*.app.dSYM --app SGT-Movilidad-COEX/Test_iOS_GitHubActions --token ${{ secrets.APPCENTER_API_TOKEN }}
