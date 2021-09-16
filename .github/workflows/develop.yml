@@ -65,6 +65,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: pass_file
+          path: test_success.txt
 
       - name: Read file test_success.txt and set output parameter
         id: set_output
@@ -103,6 +104,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: pass_file
+          path: test_success.txt
 
       - name: Read file test_success.txt and set output parameter
         id: set_output
@@ -150,6 +152,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: pass_file
+          path: test_success.txt
 
       - name: Read file test_success.txt and set output parameter
         id: set_output
