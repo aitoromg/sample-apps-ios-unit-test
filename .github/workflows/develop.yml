@@ -40,12 +40,38 @@ jobs:
           name: Slather Report
           path: ./html/*
 
+      - name: Create file test_success.txt and write 'true' into it
+        if: ${{ success() }}
+        run: echo 'true' > post_message.txt
+
+      - name: Create file test_success.txt and write 'false' into it
+        if: ${{ failure() }}
+        run: echo 'false' > post_message.txt
+
+      - name: Upload file test_success.txt
+        uses: actions/upload-artifact@v2
+        with:
+          name: pass_file
+          path: test_success.txt
+
   dependency-check:
+    needs: [unit-tests]
+    if: always()
     name: Dependency Check
     runs-on: macos-latest
 
     steps:
+      - name: Download file test_success.txt
+        uses: actions/download-artifact@v2
+        with:
+          name: pass_file
+
+      - name: Read file test_success.txt and set output parameter
+        id: set_output
+        run: echo "::set-output name=test_success::$(<pass_file/test_success.txt)"
+
       - name: Checkout the repository
+        if: steps.set_output.outputs.test_success == 'true'
         uses: actions/checkout@v2
         with:
           lfs: true
@@ -66,12 +92,24 @@ jobs:
           path: dependency-check-report.html
           
   kiuwan:
+    needs: [unit-tests]
+    if: always()
     name: Kiuwan
     runs-on: ubuntu-latest
     
     steps:
 
+      - name: Download file test_success.txt
+        uses: actions/download-artifact@v2
+        with:
+          name: pass_file
+
+      - name: Read file test_success.txt and set output parameter
+        id: set_output
+        run: echo "::set-output name=test_success::$(<pass_file/test_success.txt)"
+
       - name: Checkout the repository
+        if: steps.set_output.outputs.test_success == 'false'
         uses: actions/checkout@v2
         with:
           lfs: true
@@ -101,12 +139,24 @@ jobs:
           path: ./kiuwan_report.pdf
           
   build_app:
+    needs: [unit-tests]
+    if: always()
     name: Build APP & Deploy to AppCenter
     runs-on: macos-latest
     
     steps:
 
+      - name: Download file test_success.txt
+        uses: actions/download-artifact@v2
+        with:
+          name: pass_file
+
+      - name: Read file test_success.txt and set output parameter
+        id: set_output
+        run: echo "::set-output name=test_success::$(<pass_file/test_success.txt)"
+
       - name: Checkout the repository
+        if: steps.set_output.outputs.test_success == 'true'
         uses: actions/checkout@v2
         with:
           lfs: true
@@ -122,8 +172,9 @@ jobs:
         with:
           type: 'zip'
           filename: 'app.zip'
-          path: '/Users/runner/Library/Developer/Xcode/DerivedData/*/Build/Products/Debug-iphonesimulator/'
+          path: '/Users/runner/Library/Developer/Xcode/DerivedData/*/Build/Products/Debug-iphonesimulator/*.app'
 
       - name: Deploy to AppCenter
         run: | 
           appcenter distribute release -f ./*.zip -g Collaborators --app SGT-Movilidad-COEX/Test_iOS_GitHubActions --build-version ${{ github.run_number }} --token ${{ secrets.APPCENTER_API_TOKEN }}
+        # appcenter crashes upload-symbols -s /Users/runner/Library/Developer/Xcode/DerivedData/*/Build/Products/Debug-iphonesimulator/*.app.dSYM --app SGT-Movilidad-COEX/Test_iOS_GitHubActions --token ${{ secrets.APPCENTER_API_TOKEN }}
