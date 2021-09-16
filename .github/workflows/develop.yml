@@ -21,7 +21,14 @@ jobs:
         run: git lfs pull
 
       - name: Run Unit Tests
-        run: xcodebuild -project BitriseUnitTestSample.xcodeproj -scheme BitriseUnitTestSample -destination "platform=iOS Simulator,name=iPhone 12,OS=latest" clean test | xcpretty
+        id: xcodebuild
+        run: | 
+          xcodebuild -project BitriseUnitTestSample.xcodeproj -scheme BitriseUnitTestSample -destination "platform=iOS Simulator,name=iPhone 12,OS=latest" clean test | xcpretty
+          echo "::set-output name=result::$?"
+
+      - name: Check Unit Tests Passed
+        if: steps.xcodebuild.outputs.result != 0
+        run: exit 1
 
       - name: Install Slather
         if: ${{ failure() }}
