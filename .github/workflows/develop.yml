@@ -122,7 +122,7 @@ jobs:
         with:
           type: 'zip'
           filename: 'app.zip'
-          path: './Users/runner/Library/Developer/Xcode/DerivedData/*/Build/Products/Debug-iphonesimulator/*.app'
+          path: '/Users/runner/Library/Developer/Xcode/DerivedData/*/Build/Products/Debug-iphonesimulator/'
 
       - name: Deploy to AppCenter
         run: | 
