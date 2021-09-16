@@ -82,7 +82,7 @@ jobs:
 
       - name: Read file test_success.txt and set output parameter
         id: set_output
-        run: echo "::set-output name=test_success::$(<pass_file_mock/test_success.txt)"
+        run: echo "::set-output name=test_success::$(<test_mock_success.txt)"
 
       - name: Checkout the repository
         if: steps.set_output.outputs.test_success == 'true'
