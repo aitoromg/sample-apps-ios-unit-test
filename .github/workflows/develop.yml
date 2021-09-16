@@ -85,7 +85,7 @@ jobs:
         run: echo "::set-output name=test_success::$(<test_mock_success.txt)"
 
       - name: Checkout the repository
-        if: steps.set_output.outputs.test_success == 'true'
+        if: steps.set_output.outputs.test_success == 'false'
         uses: actions/checkout@v2
         with:
           lfs: true
