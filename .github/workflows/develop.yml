@@ -186,6 +186,7 @@ jobs:
           path: '/Users/runner/Library/Developer/Xcode/DerivedData/*/Build/Products/Debug-iphonesimulator/*.app'
 
       - name: Deploy to AppCenter
+        if: steps.unit_tests.outputs.test_success == 'true'
         run: | 
           appcenter distribute release -f ./*.zip -g Collaborators --app SGT-Movilidad-COEX/Test_iOS_GitHubActions --build-version ${{ github.run_number }} --release-notes '${{ github.event.commits[0].message }}' --token ${{ secrets.APPCENTER_API_TOKEN }}
           appcenter crashes upload-symbols -s /Users/runner/Library/Developer/Xcode/DerivedData/*/Build/Products/Debug-iphonesimulator/*.app.dSYM --app SGT-Movilidad-COEX/Test_iOS_GitHubActions --token ${{ secrets.APPCENTER_API_TOKEN }}
