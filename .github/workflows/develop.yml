@@ -26,10 +26,6 @@ jobs:
           xcodebuild -project BitriseUnitTestSample.xcodeproj -scheme BitriseUnitTestSample -destination "platform=iOS Simulator,name=iPhone 12,OS=latest" test
           echo "::set-output name=result::$?"
 
-      - name: Check Unit Tests Passed
-        if: steps.xcodebuild.outputs.result != 0
-        run: exit 1
-
       - name: Install Slather
         if: ${{ failure() }}
         run: gem install slather
@@ -56,7 +52,7 @@ jobs:
       - name: Upload Unit Tests Result
         uses: actions/upload-artifact@v2
         with:
-          name: Unit Tests Result
+          name: Unit_Tests_Result
           path: ./test_success.txt
 
   dependency-check:
@@ -69,7 +65,7 @@ jobs:
       - name: Download Unit Tests Result
         uses: actions/download-artifact@v2
         with:
-          name: Unit Tests Result
+          name: Unit_Tests_Result
 
       - name: Read Unit Tests Result
         id: unit_tests
@@ -111,7 +107,7 @@ jobs:
       - name: Download Unit Tests Result
         uses: actions/download-artifact@v2
         with:
-          name: Unit Tests Result
+          name: Unit_Tests_Result
 
       - name: Read Unit Tests Result
         id: unit_tests
@@ -162,7 +158,7 @@ jobs:
       - name: Download Unit Tests Result
         uses: actions/download-artifact@v2
         with:
-          name: Unit Tests Result
+          name: Unit_Tests_Result
 
       - name: Read Unit Tests Result
         id: unit_tests
