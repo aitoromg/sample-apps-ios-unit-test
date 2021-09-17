@@ -29,7 +29,7 @@ jobs:
       - name: Check Unit Tests Passed
         if: steps.xcodebuild.outputs.result != 0
         run: exit 1
-        
+
       - name: Install Slather
         if: ${{ failure() }}
         run: gem install slather
@@ -54,9 +54,10 @@ jobs:
         run: echo 'false' > test_success.txt
 
       - name: Upload Unit Tests Result
+        if: always()
         uses: actions/upload-artifact@v2
         with:
-          name: Unit_Tests_Result
+          name: Unit Tests Result
           path: ./test_success.txt
 
   dependency-check:
@@ -69,7 +70,7 @@ jobs:
       - name: Download Unit Tests Result
         uses: actions/download-artifact@v2
         with:
-          name: Unit_Tests_Result
+          name: Unit Tests Result
 
       - name: Read Unit Tests Result
         id: unit_tests
@@ -111,7 +112,7 @@ jobs:
       - name: Download Unit Tests Result
         uses: actions/download-artifact@v2
         with:
-          name: Unit_Tests_Result
+          name: Unit Tests Result
 
       - name: Read Unit Tests Result
         id: unit_tests
@@ -162,7 +163,7 @@ jobs:
       - name: Download Unit Tests Result
         uses: actions/download-artifact@v2
         with:
-          name: Unit_Tests_Result
+          name: Unit Tests Result
 
       - name: Read Unit Tests Result
         id: unit_tests
