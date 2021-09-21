@@ -5,7 +5,7 @@
 //  Created by Viktor Benei on 9/5/14.
 //  Copyright (c) 2014 Bitrise. All rights reserved.
 //
-
+ 
 #import <XCTest/XCTest.h>
 
 @interface BitriseUnitTestSampleTests : XCTestCase
