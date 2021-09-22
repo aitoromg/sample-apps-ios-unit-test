@@ -134,7 +134,7 @@ jobs:
         if: steps.unit_tests.outputs.test_success == 'true'
         uses: ./
         with:
-          softwareName: gsc:sgt:sd-purchase-experience:ios-ci
+          softwareName: Z999999-IOS_PIPELINES_TEST
           sourcePath: ./
           user: ${{ secrets.KIUWAN_USER }}
           pass: ${{ secrets.KIUWAN_PASS }}
