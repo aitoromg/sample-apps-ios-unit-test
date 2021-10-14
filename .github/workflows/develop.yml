@@ -145,6 +145,48 @@ jobs:
         with:
           name: Kiuwan Report
           path: ./kiuwan_report.pdf
+    
+  sonarqube:
+    needs: [unit-tests]
+    if: always()
+    name: SonarQube
+    runs-on: ubuntu-latest
+    
+    steps:
+    
+      - name: Download Unit Tests Result
+        uses: actions/download-artifact@v2
+        with:
+          name: Unit Tests Result
+
+      - name: Read Unit Tests Result
+        id: unit_tests
+        run: echo "::set-output name=test_success::$(<test_success.txt)"
+
+      - name: Checkout the repository
+        if: steps.unit_tests.outputs.test_success == 'true'
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+          # Disabling shallow clone is recommended for improving relevancy of reporting
+          fetch-depth: 0
+          
+      - name: Pull LFS objects
+        if: steps.unit_tests.outputs.test_success == 'true'
+        run: git lfs pull
+
+      - name: SonarQube Scan
+        if: steps.unit_tests.outputs.test_success == 'true'
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+      - uses: actions/upload-artifact@v2
+        if: steps.unit_tests.outputs.test_success == 'true'
+        with:
+          name: SonarQube Report
+          path: ./sonarqube_report.pdf
           
   build_app:
     needs: [unit-tests]
